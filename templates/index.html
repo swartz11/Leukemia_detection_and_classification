@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acute Lymphoblastic Leukemia Classification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Acute Lymphoblastic Leukemic Cell Prediction with XAI</h1>
+            <p class="subtitle">AI-Assisted Microscopic Image Classification</p>
+        </div>
+        
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-container">
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" name="file" id="fileInput" accept=".jpg,.jpeg,.png" required>
+                    <label for="fileInput" class="upload-label">
+                        <div class="upload-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                        </div>
+                        <div class="upload-text" id="uploadText">Upload microscopic image (JPG, PNG, JPEG)</div>
+                        <div class="file-requirements">Max file size: 5MB</div>
+                    </label>
+                    <div class="image-preview" id="imagePreview">
+                        <img id="previewImage" alt="Preview">
+                        <button type="button" class="remove-btn" id="removeBtn">×</button>
+                    </div>
+                </div>
+                <button type="submit" class="classify-btn" id="classifyBtn" disabled>
+                    <span>Analyze Image</span>
+                    
+                </button>
+            </div>
+        </form>
+        
+        <div class="disclaimer-box">
+            <div class="disclaimer-content">
+                <p>Disclaimer: This tool provides preliminary analysis only. All results must be interpreted by a qualified hematologist. Not for diagnostic use.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadText = document.getElementById('uploadText');
+        const previewImage = document.getElementById('previewImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeBtn = document.getElementById('removeBtn');
+        const classifyBtn = document.getElementById('classifyBtn');
+        const uploadArea = document.getElementById('uploadArea');
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size exceeds 5MB limit');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previewImage.src = event.target.result;
+                    uploadText.textContent = file.name;
+                    imagePreview.style.display = 'block';
+                    uploadArea.classList.add('file-selected');
+                    classifyBtn.disabled = false;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        removeBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            previewImage.src = '';
+            uploadText.textContent = 'Upload microscopic image (JPG, PNG, JPEG)';
+            imagePreview.style.display = 'none';
+            uploadArea.classList.remove('file-selected');
+            classifyBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Analysis Results</h1>
+            <p class="subtitle">AI-Assisted Acute Lymphoblastic Leukemia Classification</p>
+        </div>
+
+        <div class="results-container">
+            <div class="results-top">
+                <div class="original-image">
+                    <h3>Original Image</h3>
+                    <img src="{{ url_for('static', filename='uploads/' + image_file) }}" alt="Analyzed Image">
+                </div>
+                
+                <div class="confidence-graph">
+                    <h3>Classification Confidence</h3>
+                    <div class="probability-chart">
+                        {% for i in range(class_names|length) %}
+                        <div class="probability-bar">
+                            <div class="label">{{ class_names[i] }}</div>
+                            <div class="bar-container">
+                                <div class="bar {% if i == predicted_class_idx %}active{% endif %}" 
+                                     style="width: {{ preds[i] * 100 }}%">
+                                    <span>{{ "%.1f"|format(preds[i] * 100) }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction Result -->
+            <div class="prediction-result">
+                <h3>Primary Classification</h3>
+                <div class="prediction-card {% if prediction == 'Benign' %}benign{% else %}malignant{% endif %}">
+                    <div class="prediction-text">
+                        <span class="prediction-label">{{ prediction }}</span>
+                        <span class="confidence-value">{{ confidence }} confidence</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heatmaps Section -->
+            <div class="heatmap-section">
+                <h3>Class Activation Maps</h3>
+                <div class="heatmap-grid">
+                    {% for i in range(heatmap_paths|length) %}
+                    <div class="heatmap-card">
+                        <div class="heatmap-image-container">
+                            <img src="{{ url_for('static', filename='heatmaps/' + heatmap_paths[i]) }}" 
+                                 alt="{{ class_names[i] }} heatmap">
+                        </div>
+                        <div class="heatmap-info">
+                            <span class="class-name">{{ class_names[i] }}</span>
+                            <span class="activation-value">{{ "%.1f"|format(activation_percentages[i]) }}% activation</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            
+            <!-- Medical Report Section -->
+            <div class="report-section">
+                <h3>AI Clinical Report</h3>
+                {% if report_text %}
+                <div class="report-content">
+                    {{ report_text|replace('\n', '<br>')|safe }}
+                </div>
+                <div class="report-actions">
+                    {% if report_filename %}
+                    <a href="{{ url_for('download_report', filename=report_filename) }}" class="download-btn">
+                        Download Full Report
+                    </a>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="report-content">
+                    <p>Report generation failed. Please try again.</p>
+                </div>
+                {% endif %}
+            </div>
+            
+
+            <!-- Analyze Another Button -->
+            <div class="action-buttons">
+                <a href="{{ url_for('upload_file') }}" class="analyze-btn">
+                    
+                    Analyze Another Image
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
